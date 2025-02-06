@@ -1,20 +1,43 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React,{useState, useEffect} from 'react';
+import {StatusBar, Button, StyleSheet, Text, View} from 'react-native';
+import {Audio} from 'expo-av';
+const styles = StyleSheet.create({
+    container: {
+
+    },
+});
+
 
 export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
+    const [mySound, setMySound] = useState();
+
+    async function playSound(){
+        const soundfile = require('./short1.wav');
+        const {sound} = await Audio.Sound.createAsync(soundfile);
+        setMySound(sound);
+        await sound.playAsync();
+    }
+
+    useEffect(() => {
+        return mySound
+            ? () => {
+                console.log('Unloading Sound');
+                mySound.unloadAsync();
+            }
+            :undefined;
+    }, [mySound]);
+
+    return (
+        <View>
+            <StatusBar />
+            <Button title="Play Sound" onPress={
+                ()=>{
+                    playSound();
+
+                }}
+            />
+        </View>
+    );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+
